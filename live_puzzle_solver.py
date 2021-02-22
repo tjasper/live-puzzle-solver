@@ -26,30 +26,22 @@ def matchPiece(piece_img, full_img):
     return full_img
 
 
-def getCoursorImg(radian_x = 16, radian_y=16):
+def getCoursorImg(offset_x = 16, offset_y=16):
 
     pos = pyautogui.position()
-    (c_y, c_x) = pos
-    
+    (c_x, c_y) = pos
+
+    print( pos )
+
+    x_start = max(0, c_x-offset_x)
+    y_start = max(0, c_y-offset_y)
+
     # https://pillow.readthedocs.io/en/stable/reference/ImageGrab.html
-    img = ImageGrab.grab() # default multi monitor == False
-    img_np = np.array(img)
-
-    x_start = min(img_np.shape[0], max(0, c_x-radian_x))
-    x_end = min(img_np.shape[0],  max(0, c_x+radian_x))
-    y_start = min(img_np.shape[1],  max(0, c_y-radian_y))
-    y_end = min(img_np.shape[1],  max(0, c_y+radian_y))
-    if(x_start == x_end):
-        x_start -= 3
-    if(y_start == y_end):
-        y_start -= 3
-
-    #cv2.imwrite("debug_img.jpg", img_np)
-
-    coursor_img = img_np[x_start:x_end, y_start:y_end, :]
-    coursor_img = cv2.cvtColor(coursor_img, cv2.COLOR_BGR2RGB)
-
-    return coursor_img
+    bbox=(x_start, y_start, c_x+offset_x, c_y+offset_y)
+    img = np.array( ImageGrab.grab(bbox=bbox) )
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    
+    return img
 
 
 def main():
